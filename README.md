@@ -31,7 +31,7 @@ A key strength of easyAuth is the ability to **easily add authentication to any 
 
 ### Installation
 1. Clone the repository or download the project files.
-2. Navigate to the `auth` directory.
+2. Navigate to the main directory.
 3. Install the required Python packages:
 
 ```bash
