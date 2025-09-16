@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+            flex-direction: column;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        img.profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            margin-bottom: 1rem;
+        }
+        #loading {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        .error {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .data-container p {
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+        .data-container strong {
+            color: #555;
+        }
+        .is-admin {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>User Profile</h1>
+        <div id="loading">Loading user data...</div>
+        <div id="profile-container" style="display: none;">
+            <img id="profile-picture" class="profile-pic" alt="Profile Picture">
+            <div class="data-container">
+                <p><strong>Username:</strong> <span id="username"></span></p>
+                <p><strong>Admin:</strong> <span id="is-admin"></span></p>
+            </div>
+        </div>
+        <div id="error-message" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileContainer = document.getElementById('profile-container');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('error-message');
+            const usernameSpan = document.getElementById('username');
+            const isAdminSpan = document.getElementById('is-admin');
+            const profilePicture = document.getElementById('profile-picture');
+
+            fetch('http://localhost:80/api/me')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loading.style.display = 'none';
+                    profileContainer.style.display = 'block';
+
+                    usernameSpan.textContent = data.username;
+                    isAdminSpan.textContent = data.is_admin ? 'Yes' : 'No';
+                    if (data.is_admin) {
+                        isAdminSpan.classList.add('is-admin');
+                    }
+                    profilePicture.src = data.profile_picture_url;
+                    profilePicture.alt = `${data.username}'s profile picture`;
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    loading.style.display = 'none';
+                    errorMessage.textContent = `Failed to load user data. Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+        });
+    </script>
+
+</body>
+</html>
